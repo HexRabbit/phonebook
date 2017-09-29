@@ -28,7 +28,7 @@ typedef struct __NAME_ENTRY {
 } nameEntry;
 
 
-size_t djb2(char *str);
+unsigned int djb2(char *str);
 entry *findNameHash(char lastName[], nameEntry **hashTable);
 void appendHash(char lastName[], entry *e, nameEntry **hashTable);
 entry *append(char lastName[], entry *e);

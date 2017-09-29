@@ -103,12 +103,18 @@ int main(int argc, char *argv[])
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
-    entry *nxt;
-    for(; pHead != NULL; pHead = nxt) {
+    for(entry *nxt; pHead != NULL; pHead = nxt) {
         nxt = pHead->pNext;
         free(pHead);
     }
 #ifdef OPT
+    for(int i=0; i<TABLE_SIZE; i++) {
+        for(nameEntry *j=hashTable[i], *nxt; j != NULL; j = nxt) {
+            nxt = j->pNext;
+            free(j);
+        }
+    }
+    free(hashTable);
 #endif
     return 0;
 }

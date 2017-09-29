@@ -22,31 +22,30 @@ entry *findNameHash(char lastName[], nameEntry **hashTable)
 
 void appendHash(char lastName[], entry *e, nameEntry **hashTable)
 {
-    size_t key = djb2(lastName);
+    unsigned int key = djb2(lastName);
     nameEntry *new = malloc(sizeof(nameEntry));
-    strcpy(new->lastName,lastName);
+    strcpy(new->lastName, lastName);
     new->pBook = e;
-    nameEntry *pHead = hashTable[key];
-    new->pNext = pHead;
-    pHead = new;
+    new->pNext = hashTable[key];
+    hashTable[key] = new;
     return;
 }
 
-size_t djb2(char *str)
+unsigned int djb2(char *str)
 {
-    size_t hash = TABLE_SIZE;
+    unsigned int hash = TABLE_SIZE;
     int c;
 
     while(c = *str) {
         hash = ((hash << 5) + hash) + c;
         ++str;
     }
-    return hash%TABLE_SIZE;
+    return hash % TABLE_SIZE;
 }
 
 nameEntry **InitHashTable()
 {
-    size_t table_size = TABLE_SIZE;
+    unsigned int table_size = TABLE_SIZE;
     nameEntry **pt = malloc(table_size * sizeof(nameEntry *));
     for(int i=0; i<table_size; ++i) {
         pt[i] = NULL;
