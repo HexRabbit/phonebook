@@ -1,16 +1,66 @@
 #include <stdlib.h>
-
+#include <stdio.h>
+#include <string.h>
 #include "phonebook_opt.h"
 
+
 /* TODO: FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastName[], entry *pHead)
+entry *findNameHash(char lastName[], nameEntry **hashTable)
 {
-    /* TODO: implement */
+    size_t key = djb2(lastName);
+    nameEntry *pHead = hashTable[key];
+    while(pHead != NULL) {
+        if(!strcasecmp(lastName,pHead->lastName)) {
+            printf("Found name %s !\n", lastName);
+            return pHead->pBook;
+        }
+        pHead = pHead->pNext;
+    }
+    printf("Name %s not found\n", lastName);
     return NULL;
+}
+
+void appendHash(char lastName[], entry *e, nameEntry **hashTable)
+{
+    size_t key = djb2(lastName);
+    nameEntry *new = malloc(sizeof(nameEntry));
+    strcpy(new->lastName,lastName);
+    new->pBook = e;
+    nameEntry *pHead = hashTable[key];
+    new->pNext = pHead;
+    pHead = new;
+    return;
+}
+
+size_t djb2(char *str)
+{
+    size_t hash = TABLE_SIZE;
+    int c;
+
+    while(c = *str) {
+        hash = ((hash << 5) + hash) + c;
+        ++str;
+    }
+    return hash%TABLE_SIZE;
+}
+
+nameEntry **InitHashTable()
+{
+    size_t table_size = TABLE_SIZE;
+    nameEntry **pt = malloc(table_size * sizeof(nameEntry *));
+    for(int i=0; i<table_size; ++i) {
+        pt[i] = NULL;
+    }
+    return pt;
 }
 
 entry *append(char lastName[], entry *e)
 {
-    /* TODO: implement */
-    return NULL;
+    /* allocate memory for the new entry and put lastName */
+    e->pNext = (entry *) malloc(sizeof(entry));
+    e = e->pNext;
+    strcpy(e->lastName, lastName);
+    e->pNext = NULL;
+
+    return e;
 }
