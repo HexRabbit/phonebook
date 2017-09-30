@@ -30,11 +30,8 @@ typedef struct __NAME_ENTRY {
 
 unsigned int djb2(char *str);
 entry *findNameHash(char lastName[], nameEntry **hashTable);
-entry *findNameHash2(char lastName[], entry **hashTable);
 void appendHash(char lastName[], nameEntry **hashTable);
-void appendHash2(char lastName[], entry **hashTable);
 entry *append(char lastName[], entry *e);
 nameEntry **InitHashTable();
-entry **InitHashTable2();
 
 #endif

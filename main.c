@@ -85,13 +85,8 @@ int main(int argc, char *argv[])
 #endif
 
     /* the givn last name to find */
-    char input[MAX_LAST_NAME_SIZE] = "zyxel";
+    char input[][MAX_LAST_NAME_SIZE] = {"zyxel", "tankstopper", "zyzop", "invecked", "muise", "amelu", "qwd23djclw", "kenkeikai"};
 
-#ifndef OPT
-    assert(findName(input, e) &&
-           "Did you implement findName() in " IMPL "?");
-    assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
-#endif
 
 #ifndef OPT
 #if defined(__GNUC__)
@@ -100,11 +95,13 @@ int main(int argc, char *argv[])
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+    for(int i=0; i<sizeof(input)/MAX_LAST_NAME_SIZE; ++i) {
 #ifdef OPT
-    findNameHash(input, hashTable);
+        findNameHash(input[i], hashTable);
 #else
-    findName(input, e);
+        findName(input[i], e);
 #endif
+    }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
@@ -119,6 +116,7 @@ int main(int argc, char *argv[])
     for(int i=0; i<TABLE_SIZE; i++) {
         for(nameEntry *j=hashTable[i], *nxt; j != NULL; j = nxt) {
             nxt = j->pNext;
+            free(j->pBook);
             free(j);
         }
     }

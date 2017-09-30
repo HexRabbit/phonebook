@@ -18,45 +18,25 @@ entry *findNameHash(char lastName[], nameEntry **hashTable)
     return NULL;
 }
 
-entry *findNameHash2(char lastName[], entry **hashTable)
-{
-    size_t key = djb2(lastName);
-    entry *pHead = hashTable[key];
-    while(pHead != NULL) {
-        if(!strcasecmp(lastName,pHead->lastName)) {
-            return pHead;
-        }
-        pHead = pHead->pNext;
-    }
-    return NULL;
-}
-
 void appendHash(char lastName[], nameEntry **hashTable)
 {
     unsigned int key = djb2(lastName);
     nameEntry *ne = malloc(sizeof(nameEntry));
+
     entry *e = malloc(sizeof(entry));
     strcpy(e->lastName, lastName);
-    strcpy(ne->lastName, lastName);
     ne->pBook = e;
+
+    strcpy(ne->lastName, lastName);
     ne->pNext = hashTable[key];
     hashTable[key] = ne;
     return;
 }
 
-void appendHash2(char lastName[], entry **hashTable)
-{
-    unsigned int key = djb2(lastName);
-    entry *new = malloc(sizeof(entry));
-    strcpy(new->lastName, lastName);
-    new->pNext = hashTable[key];
-    hashTable[key] = new;
-    return;
-}
 unsigned int djb2(char *str)
 {
     unsigned int hash = TABLE_SIZE;
-    int c;
+    unsigned int c;
 
     while(c = *str) {
         hash = ((hash << 5) + hash) + c;
@@ -69,16 +49,6 @@ nameEntry **InitHashTable()
 {
     unsigned int table_size = TABLE_SIZE;
     nameEntry **pt = malloc(table_size * sizeof(nameEntry *));
-    for(int i=0; i<table_size; ++i) {
-        pt[i] = NULL;
-    }
-    return pt;
-}
-
-entry **InitHashTable2()
-{
-    unsigned int table_size = TABLE_SIZE;
-    entry **pt = malloc(table_size * sizeof(entry *));
     for(int i=0; i<table_size; ++i) {
         pt[i] = NULL;
     }
