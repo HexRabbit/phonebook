@@ -30,12 +30,13 @@ run: $(EXEC)
 	watch -d -t "./phonebook_orig && echo 3 | sudo tee /proc/sys/vm/drop_caches"
 
 cache-test: $(EXEC)
+	rm -f orig.txt opt.txt
 	perf stat --repeat 100 \
 		-e cache-misses,cache-references,instructions,cycles \
-		./phonebook_orig
+		./phonebook_orig > /dev/null
 	perf stat --repeat 100 \
 		-e cache-misses,cache-references,instructions,cycles \
-		./phonebook_opt
+		./phonebook_opt > /dev/null
 
 output.txt: cache-test calculate
 	./calculate

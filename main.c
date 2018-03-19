@@ -8,6 +8,7 @@
 
 #ifdef OPT
 #define OUT_FILE "opt.txt"
+#define POOL_SIZE 400000*(sizeof(entry)+sizeof(nameEntry))
 #else
 #define OUT_FILE "orig.txt"
 #endif
@@ -47,6 +48,9 @@ int main(int argc, char *argv[])
 #ifdef OPT
     /* build the hashTable */
     nameEntry **hashTable = InitHashTable();
+    /* init memPool */
+    memPool mp;
+    pool_init(&mp, POOL_SIZE);
 #else
     /* build the entry */
     entry *pHead, *e;
@@ -69,7 +73,7 @@ int main(int argc, char *argv[])
         line[i - 1] = '\0';
         i = 0;
 #ifdef OPT
-        appendHash(line, hashTable);
+        appendHash(line, hashTable, &mp);
 #else
         e = append(line, e);
 #endif
@@ -113,14 +117,8 @@ int main(int argc, char *argv[])
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
 #ifdef OPT
-    for(int i=0; i<TABLE_SIZE; i++) {
-        for(nameEntry *j=hashTable[i], *nxt; j != NULL; j = nxt) {
-            nxt = j->pNext;
-            free(j->pBook);
-            free(j);
-        }
-    }
     free(hashTable);
+    pool_free(&mp);
 #else
     for(entry *nxt; pHead != NULL; pHead = nxt) {
         nxt = pHead->pNext;

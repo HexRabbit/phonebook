@@ -22,16 +22,24 @@ typedef struct __PHONE_BOOK_ENTRY {
 } entry;
 
 typedef struct __NAME_ENTRY {
-    char lastName[MAX_LAST_NAME_SIZE];
     entry *pBook;
     struct __NAME_ENTRY *pNext;
 } nameEntry;
 
+typedef struct _m_pool {
+    char *head;
+    char *next;
+    unsigned size;
+} memPool;
 
 unsigned int djb2(char *str);
 entry *findNameHash(char lastName[], nameEntry **hashTable);
-void appendHash(char lastName[], nameEntry **hashTable);
+void appendHash(char lastName[], nameEntry **hashTable, memPool *mp);
 entry *append(char lastName[], entry *e);
 nameEntry **InitHashTable();
+
+void pool_init(memPool *mp, unsigned int size);
+void *pool_alloc(memPool *mp, unsigned int size);
+void pool_free(memPool *mp);
 
 #endif

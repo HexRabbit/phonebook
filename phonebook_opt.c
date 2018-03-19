@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include "phonebook_opt.h"
 
 
@@ -10,7 +11,7 @@ entry *findNameHash(char lastName[], nameEntry **hashTable)
     size_t key = djb2(lastName);
     nameEntry *pHead = hashTable[key];
     while(pHead != NULL) {
-        if(!strcasecmp(lastName,pHead->lastName)) {
+        if(!strcasecmp(lastName,pHead->pBook->lastName)) {
             return pHead->pBook;
         }
         pHead = pHead->pNext;
@@ -18,17 +19,16 @@ entry *findNameHash(char lastName[], nameEntry **hashTable)
     return NULL;
 }
 
-void appendHash(char lastName[], nameEntry **hashTable)
+void appendHash(char lastName[], nameEntry **hashTable, memPool *mp)
 {
     unsigned int key = djb2(lastName);
-    nameEntry *ne = malloc(sizeof(nameEntry));
+    nameEntry *ne = (nameEntry *)pool_alloc(mp, sizeof(nameEntry));
 
-    entry *e = malloc(sizeof(entry));
+    entry *e = (entry *)pool_alloc(mp, sizeof(entry));
     strcpy(e->lastName, lastName);
     ne->pBook = e;
-
-    strcpy(ne->lastName, lastName);
     ne->pNext = hashTable[key];
+
     hashTable[key] = ne;
     return;
 }
@@ -64,4 +64,26 @@ entry *append(char lastName[], entry *e)
     e->pNext = NULL;
 
     return e;
+}
+
+void pool_init(memPool *mp, unsigned size)
+{
+    size = size + (8 - size % 8);
+    mp->next = mp->head = malloc(size);
+    mp->size = size;
+}
+
+void *pool_alloc(memPool *mp, unsigned size)
+{
+    if(size > mp->size) return NULL;
+
+    mp->size -= size;
+    void *tmp = mp->next;
+    mp->next += size;
+    return tmp;
+}
+
+void pool_free(memPool *mp)
+{
+    free(mp->head);
 }
